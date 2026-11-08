@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import streamlit.components.v1 as components
+from streamlit_mic_recorder import speech_to_text
 
 st.set_page_config(
     page_title="Science SmartBot",
@@ -77,7 +78,17 @@ lang = "ur" if language == "Urdu" else "sd"
 st.divider()
 st.subheader("💬 Ask Science SmartBot")
 
-question = st.text_input("Type your science question:")
+voice_question = speech_to_text(
+    language="ur-PK" if lang == "ur" else "sd-PK",
+    start_prompt="🎤 Start Speaking",
+    stop_prompt="⏹️ Stop Recording",
+    just_once=True,
+    key="science_voice"
+)
+
+if voice_question:
+    question = voice_question
+    st.info("Your spoken question: " + question)
 
 if st.button("Ask SmartBot"):
     answer = None
