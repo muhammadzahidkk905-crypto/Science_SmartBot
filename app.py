@@ -303,27 +303,6 @@ for row in range(0, len(topic_list), 2):
                 for i, item in enumerate(items, 1):
                     st.write(f"*Q{i}. {item[lang]}*")
 
-# SMARTBOT STATISTICS DASHBOARD
-
-total_topics = len(topics)
-total_questions = sum(len(items) for items in topics.values())
-
-st.divider()
-st.subheader("📊 Science SmartBot Dashboard")
-
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.metric("📚 Topics", total_topics)
-
-with col2:
-    st.metric("❓ Questions", total_questions)
-
-with col3:
-    st.metric("🌐 Languages", 2)
-
-with col4:
-    st.metric("🎯 Quiz Questions", len(quiz_bank))
     
 # ASK SMARTBOT
 
