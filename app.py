@@ -89,7 +89,7 @@ voice_question = speech_to_text(
 )
 
 if voice_question:
-    question = voice_question
+    question = voice_question.strip()
     st.info("Your spoken question: " + question)
 
 if st.button("Ask SmartBot"):
