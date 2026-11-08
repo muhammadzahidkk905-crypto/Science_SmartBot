@@ -151,7 +151,6 @@ h3 {
 </style>
 """, unsafe_allow_html=True)
 
-    st.divider()
 st.header("📚 Science Question Library")
 
 topic_questions = {
