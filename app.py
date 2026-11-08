@@ -1,4 +1,5 @@
 import streamlit as st
+import random
 import json
 import streamlit.components.v1 as components
 
@@ -7,22 +8,21 @@ st.set_page_config(
     page_icon="🔬",
     layout="centered"
 )
+
+# DESIGN
 st.markdown("""
 <style>
 .stApp {
-    background: linear-gradient(135deg, #e8f5f0, #eaf1ff);
+    background: linear-gradient(135deg,#e8f5f0,#eaf1ff);
 }
-
 h1 {
     color: #12664f;
     text-align: center;
     font-weight: 800;
 }
-
-h3 {
+h2, h3 {
     color: #176b55;
 }
-
 .stButton > button {
     background: #176b55;
     color: white;
@@ -31,79 +31,196 @@ h3 {
     padding: 10px 22px;
     font-weight: bold;
 }
-
 .stButton > button:hover {
     background: #104c3d;
     color: white;
 }
-
-.stTextInput input {
-    border-radius: 10px;
-}
-
-.stSelectbox div[data-baseweb="select"] {
-    border-radius: 10px;
-}
 </style>
 """, unsafe_allow_html=True)
 
-science_data = {
-    "plants": {
-        "keywords": ["plants", "photosynthesis", "پودے", "ٻوٽا"],
-         "ur": "پودے سورج کی روشنی، پانی اور کاربن ڈائی آکسائیڈ سے اپنی خوراک بناتے ہیں۔",
-        "sd": "ٻوٽا سج جي روشني، پاڻي ۽ ڪاربان ڊاءِ آڪسائيڊ سان پنهنجي خوراڪ ٺاهين ٿا۔"
-    },
-    "heart": {
-        "keywords": ["heart", "دل"],
-        "ur": "دل پورے جسم میں خون پمپ کرتا ہے۔",
-        "sd": "دل سڄي جسم ۾ رت پمپ ڪري ٿو۔"
-    },
-    "water": {
-        "keywords": ["water cycle", "پانی کا چکر", "پاڻي جو چڪر"],
-        "ur": "پانی بخارات بنتا ہے، بادل بنتے ہیں اور بارش ہوتی ہے۔",
-        "sd": "پاڻي ٻاڦ بڻجي ٿو، ڪڪر ٺهن ٿا ۽ مينهن وسي ٿو۔"
-    },
-    "gravity": {
-        "keywords": ["gravity", "کشش ثقل"],
-        "ur": "کشش ثقل چیزوں کو زمین کی طرف کھینچتی ہے۔",
-        "sd": "ڪشش ثقل شين کي زمين ڏانهن ڇڪي ٿي۔"
-    },
-    "matter": {
-        "keywords": ["matter", "مادہ", "مادو"],
-        "ur": "مادہ وہ چیز ہے جس کا وزن ہو اور جو جگہ گھیرتی ہو۔",
-        "sd": "مادو اها شيءِ آهي جنهن جو وزن هجي ۽ جيڪا جاءِ والاري۔"
-    },
-    "solar": {
-        "keywords": ["solar system", "شمسی نظام", "شمسي نظام"],
-        "ur": "شمسی نظام میں سورج اور اس کے گرد گردش کرنے والے سیارے شامل ہیں۔",
-        "sd": "شمسي نظام ۾ سج ۽ ان جي چوڌاري گردش ڪندڙ سيارا شامل آهن۔"
-    },
-    "planets": {
-        "keywords": ["planet", "planets", "سیارے", "سيارا"],
-        "ur": "ہمارے نظامِ شمسی میں آٹھ سیارے ہیں۔",
-        "sd": "اسان جي شمسي نظام ۾ اٺ سيارا آهن۔"
-    },
-    "evaporation": {
-        "keywords": ["evaporation", "بخارات", "ٻاڦ"],
-        "ur": "پانی گرم ہو کر بھاپ میں تبدیل ہوتا ہے۔",
-        "sd": "پاڻي گرم ٿي ٻاڦ ۾ تبديل ٿئي ٿو۔"
-    },
-    "lungs": {
-        "keywords": ["lungs", "پھیپھڑے", "ڦڦڙ"],
-        "ur": "پھیپھڑے سانس لینے میں مدد دیتے ہیں۔",
-        "sd": "ڦڦڙ ساهه کڻڻ ۾ مدد ڏين ٿا۔"
-    },
-    "magnet": {
-        "keywords": ["magnet", "مقناطیس"],
-        "ur": "مقناطیس لوہے جیسی بعض دھاتوں کو اپنی طرف کھینچتا ہے۔",
-        "sd": "مقناطيس لوهه جهڙين ڪجهه ڌاتن کي پاڻ ڏانهن ڇڪي ٿو۔"
-    }
+
+# SCIENCE QUESTION AND ANSWER DATABASE
+
+topics = {
+    "Plants": [
+        {
+            "ur": "پودے اپنی خوراک کیسے بناتے ہیں؟",
+            "sd": "ٻوٽا پنهنجي خوراڪ ڪيئن ٺاهين ٿا؟",
+            "keywords": ["پودے اپنی خوراک", "photosynthesis",
+                         "ٻوٽا پنهنجي خوراڪ", "فوٹوسنتھیسز"],
+            "a_ur": "پودے سورج کی روشنی، پانی اور کاربن ڈائی آکسائیڈ سے اپنی خوراک بناتے ہیں۔ اس عمل کو فوٹوسنتھیسز کہتے ہیں۔",
+            "a_sd": "ٻوٽا سج جي روشني، پاڻي ۽ ڪاربان ڊاءِ آڪسائيڊ سان پنهنجي خوراڪ ٺاهين ٿا۔ هن عمل کي فوٽوسنٿيسس چئبو آهي۔"
+        },
+        {
+            "ur": "پودوں کو سورج کی روشنی کیوں چاہیے؟",
+            "sd": "ٻوٽن کي سج جي روشني ڇو گهرجي؟",
+            "keywords": ["سورج کی روشنی", "سج جي روشني"],
+            "a_ur": "پودوں کو خوراک بنانے کے لیے سورج کی روشنی کی ضرورت ہوتی ہے۔",
+            "a_sd": "ٻوٽن کي خوراڪ ٺاهڻ لاءِ سج جي روشني جي ضرورت هوندي آهي۔"
+        }
+    ],
+
+    "Heart": [
+        {
+            "ur": "دل کیا کام کرتا ہے؟",
+            "sd": "دل ڇا ڪم ڪري ٿو؟",
+            "keywords": ["دل کیا کام", "دل ڇا ڪم", "heart"],
+            "a_ur": "دل خون کو پورے جسم میں پمپ کرتا ہے۔",
+            "a_sd": "دل رت کي سڄي جسم ۾ پمپ ڪري ٿو۔"
+        },
+        {
+            "ur": "دل کس نظام کا حصہ ہے؟",
+            "sd": "دل ڪهڙي نظام جو حصو آهي؟",
+            "keywords": ["دل کس نظام", "دل ڪهڙي نظام"],
+            "a_ur": "دل نظام دورانِ خون کا حصہ ہے۔",
+            "a_sd": "دل رت جي گردش واري نظام جو حصو آهي۔"
+        }
+    ],
+
+    "Water Cycle": [
+        {
+            "ur": "پانی کا چکر کیا ہے؟",
+            "sd": "پاڻي جو چڪر ڇا آهي؟",
+            "keywords": ["پانی کا چکر", "پاڻي جو چڪر", "water cycle"],
+            "a_ur": "پانی کے بخارات بننے، بادل بننے اور بارش ہونے کے مسلسل عمل کو پانی کا چکر کہتے ہیں۔",
+            "a_sd": "پاڻي جي ٻاڦ ٿيڻ، ڪڪر ٺهڻ ۽ مينهن وسڻ جي مسلسل عمل کي پاڻي جو چڪر چئبو آهي۔"
+        },
+        {
+            "ur": "بارش کیسے ہوتی ہے؟",
+            "sd": "مينهن ڪيئن وسي ٿو؟",
+            "keywords": ["بارش کیسے", "مينهن ڪيئن"],
+            "a_ur": "بادلوں میں پانی کے قطرے جمع ہو کر بھاری ہوتے ہیں اور زمین پر بارش کی صورت میں گرتے ہیں۔",
+            "a_sd": "ڪڪرن ۾ پاڻي جا ڦڙا گڏ ٿي ڳرا ٿين ٿا ۽ مينهن جي صورت ۾ وسن ٿا۔"
+        }
+    ],
+
+    "Gravity": [
+        {
+            "ur": "کشش ثقل کیا ہے؟",
+            "sd": "ڪشش ثقل ڇا آهي؟",
+            "keywords": ["کشش ثقل کیا", "ڪشش ثقل ڇا", "gravity"],
+            "a_ur": "کشش ثقل ایک قوت ہے جو چیزوں کو ایک دوسرے کی طرف کھینچتی ہے۔",
+            "a_sd": "ڪشش ثقل هڪ قوت آهي جيڪا شين کي هڪ ٻئي ڏانهن ڇڪي ٿي۔"
+        },
+        {
+            "ur": "چیزیں زمین پر کیوں گرتی ہیں؟",
+            "sd": "شيون زمين تي ڇو ڪرن ٿيون؟",
+            "keywords": ["زمین پر کیوں", "زمين تي ڇو"],
+            "a_ur": "زمین کی کشش ثقل چیزوں کو اپنی طرف کھینچتی ہے۔",
+            "a_sd": "زمين جي ڪشش ثقل شين کي پاڻ ڏانهن ڇڪي ٿي۔"
+        }
+    ],
+
+    "Matter": [
+        {
+            "ur": "مادہ کیا ہے؟",
+            "sd": "مادو ڇا آهي؟",
+            "keywords": ["مادہ کیا", "مادو ڇا", "matter"],
+            "a_ur": "مادہ وہ چیز ہے جس کی کمیت ہو اور جو جگہ گھیرتی ہو۔",
+            "a_sd": "مادو اها شيءِ آهي جنهن جي ڪميت هجي ۽ جيڪا جاءِ والاري۔"
+        },
+        {
+            "ur": "مادے کی تین حالتیں کون سی ہیں؟",
+            "sd": "مادي جون ٽي حالتون ڪهڙيون آهن؟",
+            "keywords": ["مادے کی تین", "مادي جون ٽي"],
+            "a_ur": "مادے کی تین بنیادی حالتیں ٹھوس، مائع اور گیس ہیں۔",
+            "a_sd": "مادي جون ٽي بنيادي حالتون ٺوس، پاڻياٺ ۽ گئس آهن۔"
+        }
+    ],
+
+    "Solar System": [
+        {
+            "ur": "شمسی نظام کیا ہے؟",
+            "sd": "شمسي نظام ڇا آهي؟",
+            "keywords": ["شمسی نظام کیا", "شمسي نظام ڇا", "solar system"],
+            "a_ur": "شمسی نظام میں سورج اور اس کے گرد گردش کرنے والے سیارے اور دیگر اجسام شامل ہیں۔",
+            "a_sd": "شمسي نظام ۾ سج ۽ ان جي چوڌاري گردش ڪندڙ سيارا ۽ ٻيا جسم شامل آهن۔"
+        },
+        {
+            "ur": "سورج کیا ہے؟",
+            "sd": "سج ڇا آهي؟",
+            "keywords": ["سورج کیا", "سج ڇا"],
+            "a_ur": "سورج ایک ستارہ ہے جو ہمیں روشنی اور حرارت دیتا ہے۔",
+            "a_sd": "سج هڪ تارو آهي جيڪو اسان کي روشني ۽ گرمي ڏئي ٿو۔"
+        }
+    ],
+
+    "Planets": [
+        {
+            "ur": "نظام شمسی میں کتنے سیارے ہیں؟",
+            "sd": "شمسي نظام ۾ ڪيترا سيارا آهن؟",
+            "keywords": ["کتنے سیارے", "ڪيترا سيارا", "how many planets"],
+            "a_ur": "ہمارے نظام شمسی میں آٹھ سیارے ہیں۔",
+            "a_sd": "اسان جي شمسي نظام ۾ اٺ سيارا آهن۔"
+        },
+        {
+            "ur": "سب سے بڑا سیارہ کون سا ہے؟",
+            "sd": "سڀ کان وڏو سيارو ڪهڙو آهي؟",
+            "keywords": ["سب سے بڑا سیارہ", "سڀ کان وڏو سيارو"],
+            "a_ur": "مشتری نظام شمسی کا سب سے بڑا سیارہ ہے۔",
+            "a_sd": "مشتري شمسي نظام جو سڀ کان وڏو سيارو آهي۔"
+        }
+    ],
+
+    "Evaporation": [
+        {
+            "ur": "تبخیر کیا ہے؟",
+            "sd": "تبخير ڇا آهي؟",
+            "keywords": ["تبخیر کیا", "تبخير ڇا", "evaporation"],
+            "a_ur": "مائع کا حرارت حاصل کرکے بخارات میں تبدیل ہونا تبخیر کہلاتا ہے۔",
+            "a_sd": "پاڻياٺ جو گرمي حاصل ڪري ٻاڦ ۾ تبديل ٿيڻ تبخير چئبو آهي۔"
+        },
+        {
+            "ur": "پانی بھاپ میں کیسے بدلتا ہے؟",
+            "sd": "پاڻي ٻاڦ ۾ ڪيئن بدلجي ٿو؟",
+            "keywords": ["بھاپ میں کیسے", "ٻاڦ ۾ ڪيئن"],
+            "a_ur": "جب پانی حرارت حاصل کرتا ہے تو اس کے ذرات تیزی سے حرکت کرتے ہیں اور پانی بخارات بن جاتا ہے۔",
+            "a_sd": "جڏهن پاڻي گرمي حاصل ڪري ٿو ته ان جا ذرڙا تيزيءَ سان حرڪت ڪن ٿا ۽ پاڻي ٻاڦ بڻجي ٿو۔"
+        }
+    ],
+
+    "Lungs": [
+        {
+            "ur": "پھیپھڑوں کا کیا کام ہے؟",
+            "sd": "ڦڦڙن جو ڪهڙو ڪم آهي؟",
+            "keywords": ["پھیپھڑوں کا", "ڦڦڙن جو", "lungs"],
+            "a_ur": "پھیپھڑے سانس لینے میں مدد دیتے ہیں اور خون میں آکسیجن پہنچانے کے عمل میں حصہ لیتے ہیں۔",
+            "a_sd": "ڦڦڙ ساهه کڻڻ ۾ مدد ڪن ٿا ۽ رت ۾ آڪسيجن پهچائڻ واري عمل ۾ حصو وٺن ٿا۔"
+        },
+        {
+            "ur": "ہم سانس کیوں لیتے ہیں؟",
+            "sd": "اسان ساهه ڇو کڻون ٿا؟",
+            "keywords": ["سانس کیوں", "ساهه ڇو"],
+            "a_ur": "ہم جسم کو آکسیجن فراہم کرنے اور کاربن ڈائی آکسائیڈ خارج کرنے کے لیے سانس لیتے ہیں۔",
+            "a_sd": "اسان جسم کي آڪسيجن ڏيڻ ۽ ڪاربان ڊاءِ آڪسائيڊ خارج ڪرڻ لاءِ ساهه کڻون ٿا۔"
+        }
+    ],
+
+    "Magnet": [
+        {
+            "ur": "مقناطیس کیا ہے؟",
+            "sd": "مقناطيس ڇا آهي؟",
+            "keywords": ["مقناطیس کیا", "مقناطيس ڇا", "magnet"],
+            "a_ur": "مقناطیس ایک ایسی چیز ہے جو لوہے جیسی بعض دھاتوں کو اپنی طرف کھینچتی ہے۔",
+            "a_sd": "مقناطيس اهڙي شيءِ آهي جيڪا لوهه جهڙين ڪجهه ڌاتن کي پاڻ ڏانهن ڇڪي ٿي۔"
+        },
+        {
+            "ur": "مقناطیس کن چیزوں کو کھینچتا ہے؟",
+            "sd": "مقناطيس ڪهڙين شين کي ڇڪي ٿو؟",
+            "keywords": ["کن چیزوں کو", "ڪهڙين شين کي"],
+            "a_ur": "مقناطیس لوہے، نکل اور کوبالٹ جیسی بعض دھاتوں کو کھینچتا ہے۔",
+            "a_sd": "مقناطيس لوهه، نڪل ۽ ڪوبالٽ جهڙين ڪجهه ڌاتن کي ڇڪي ٿو۔"
+        }
+    ]
 }
+
+
+# APP TITLE
 
 st.markdown("""
 # 🔬 Science SmartBot
 ### Class 6 | Urdu & Sindhi
-Learn Science • Ask Questions • Take Quiz
+📚 Learn Science • Ask Questions • Take Quiz
 """)
 
 language = st.selectbox(
@@ -112,116 +229,38 @@ language = st.selectbox(
 )
 
 lang = "ur" if language == "Urdu" else "sd"
-st.markdown("""
-<style>
-.stApp {
-    background: linear-gradient(135deg, #e8f5f0, #eaf1ff);
-}
 
-h1 {
-    color: #12664f;
-    text-align: center;
-    font-weight: 800;
-}
 
-h3 {
-    color: #176b55;
-}
+# QUESTION LIBRARY - QUESTIONS ONLY
 
-.stButton > button {
-    background: #176b55;
-    color: white;
-    border-radius: 12px;
-    border: none;
-    padding: 10px 22px;
-    font-weight: bold;
-}
-
-.stButton > button:hover {
-    background: #104c3d;
-    color: white;
-}
-
-.stTextInput input {
-    border-radius: 10px;
-}
-
-.stSelectbox div[data-baseweb="select"] {
-    border-radius: 10px;
-}
-</style>
-""", unsafe_allow_html=True)
-
+st.divider()
 st.header("📚 Science Question Library")
 
-topic_questions = {
-    "Plants": {
-        "ur": [
-            "پودے اپنی خوراک کیسے بناتے ہیں؟",
-            "فوٹوسنتھیسز کیا ہے؟",
-            "پودوں کو سورج کی روشنی کیوں چاہیے؟"
-        ],
-        "sd": [
-            "ٻوٽا پنهنجي خوراڪ ڪيئن ٺاهين ٿا؟",
-            "فوٽوسنٿيسس ڇا آهي؟",
-            "ٻوٽن کي سج جي روشني ڇو گهرجي؟"
-        ]
-    },
-    "Heart": {
-        "ur": ["دل کیا کام کرتا ہے؟", "دل خون کہاں پمپ کرتا ہے؟"],
-        "sd": ["دل ڇا ڪم ڪري ٿو؟", "دل رت ڪٿي پمپ ڪري ٿو؟"]
-    },
-    "Water Cycle": {
-        "ur": ["پانی کا چکر کیا ہے؟", "بارش کیسے ہوتی ہے؟"],
-        "sd": ["پاڻي جو چڪر ڇا آهي؟", "مينهن ڪيئن وسي ٿو؟"]
-    },
-    "Gravity": {
-        "ur": ["کشش ثقل کیا ہے؟", "چیزیں زمین پر کیوں گرتی ہیں؟"],
-        "sd": ["ڪشش ثقل ڇا آهي؟", "شيون زمين تي ڇو ڪرن ٿيون؟"]
-    },
-    "Matter": {
-        "ur": ["مادہ کیا ہے؟", "مادے کی تین حالتیں کون سی ہیں؟"],
-        "sd": ["مادو ڇا آهي؟", "مادي جون ٽي حالتون ڪهڙيون آهن؟"]
-    },
-    "Solar System": {
-        "ur": ["شمسی نظام کیا ہے؟", "سورج کیا ہے؟"],
-        "sd": ["شمسي نظام ڇا آهي؟", "سج ڇا آهي؟"]
-    },
-    "Planets": {
-        "ur": ["ہمارے نظام شمسی میں کتنے سیارے ہیں؟", "سب سے بڑا سیارہ کون سا ہے؟"],
-        "sd": ["اسان جي شمسي نظام ۾ ڪيترا سيارا آهن؟", "سڀ کان وڏو سيارو ڪهڙو آهي؟"]
-    },
-    "Evaporation": {
-        "ur": ["تبخیر کیا ہے؟", "پانی بھاپ میں کیسے بدلتا ہے؟"],
-        "sd": ["تبخير ڇا آهي؟", "پاڻي ٻاڦ ۾ ڪيئن بدلجي ٿو؟"]
-    },
-    "Lungs": {
-        "ur": ["پھیپھڑوں کا کیا کام ہے؟", "ہم سانس کیوں لیتے ہیں؟"],
-        "sd": ["ڦڦڙن جو ڪهڙو ڪم آهي؟", "اسان ساهه ڇو کڻون ٿا؟"]
-    },
-    "Magnet": {
-        "ur": ["مقناطیس کیا ہے؟", "مقناطیس کن چیزوں کو کھینچتا ہے؟"],
-        "sd": ["مقناطيس ڇا آهي؟", "مقناطيس ڪهڙين شين کي ڇڪي ٿو؟"]
-    }
-}
+for topic_name, items in topics.items():
+    with st.expander("🔬 " + topic_name):
+        for i, item in enumerate(items, 1):
+            st.write(f"*Q{i}. {item[lang]}*")
 
-for topic, data in topic_questions.items():
-    with st.expander("🔬 " + topic):
-        for i, q in enumerate(data[lang], 1):
-            st.write(f"*Q{i}. {q}*")
-st.subheader("💬 Ask Science SmartBot")
 
-question = st.text_input("Type your science question:")
+# ASK SMARTBOT
+
+st.divider()
+st.header("💬 Ask Science SmartBot")
+
+question = st.text_input(
+    "اپنا سوال لکھیں / پنهنجو سوال لکو"
+)
 
 if st.button("Ask SmartBot"):
     answer = None
+    user_question = question.lower().strip()
 
-    for topic in science_data.values():
-        if any(
-            k.lower() in question.lower()
-            for k in topic["keywords"]
-        ):
-            answer = topic[lang]
+    for items in topics.values():
+        for item in items:
+            if any(k.lower() in user_question for k in item["keywords"]):
+                answer = item["a_" + lang]
+                break
+        if answer:
             break
 
     if answer:
@@ -254,61 +293,149 @@ if st.button("Ask SmartBot"):
 
         html_code = html_code.replace(
             "ANSWER_PLACEHOLDER", answer_json
-        )
-        html_code = html_code.replace(
+        ).replace(
             "LANG_PLACEHOLDER", speech_language
         )
 
         components.html(html_code, height=65)
 
-    else:
+    elif question.strip():
         st.info(
             "معذرت! یہ سوال میری معلومات میں موجود نہیں۔"
             if lang == "ur"
             else "معاف ڪجو! اهو سوال منهنجي ڄاڻ ۾ موجود ناهي۔"
         )
 
-st.divider()
-st.subheader("🧠 Science Quiz")
 
-questions = [
+# RANDOM QUIZ BANK
+
+quiz_bank = [
     {
         "ur": "پودے اپنی خوراک بنانے کے لیے کس کی روشنی استعمال کرتے ہیں؟",
         "sd": "ٻوٽا خوراڪ ٺاهڻ لاءِ ڪنهن جي روشني استعمال ڪن ٿا؟",
-        "options": ["چاند", "سورج", "ستارے"],
+        "options_ur": ["چاند", "سورج", "ستارے"],
+        "options_sd": ["چنڊ", "سج", "تارا"],
         "answer": 1
     },
     {
         "ur": "خون پورے جسم میں کون پمپ کرتا ہے؟",
         "sd": "رت سڄي جسم ۾ ڪير پمپ ڪري ٿو؟",
-        "options": ["دل", "پھیپھڑے", "معدہ"],
+        "options_ur": ["دل", "پھیپھڑے", "معدہ"],
+        "options_sd": ["دل", "ڦڦڙ", "معدو"],
         "answer": 0
     },
     {
-        "ur": "نظامِ شمسی میں کتنے سیارے ہیں؟",
+        "ur": "نظام شمسی میں کتنے سیارے ہیں؟",
         "sd": "شمسي نظام ۾ ڪيترا سيارا آهن؟",
-        "options": ["7", "8", "9"],
+        "options_ur": ["7", "8", "9"],
+        "options_sd": ["7", "8", "9"],
         "answer": 1
+    },
+    {
+        "ur": "مادے کی بنیادی حالتیں کتنی ہیں؟",
+        "sd": "مادي جون بنيادي حالتون ڪيتريون آهن؟",
+        "options_ur": ["2", "3", "4"],
+        "options_sd": ["2", "3", "4"],
+        "answer": 1
+    },
+    {
+        "ur": "زمین چیزوں کو کس قوت سے کھینچتی ہے؟",
+        "sd": "زمين شين کي ڪهڙي قوت سان ڇڪي ٿي؟",
+        "options_ur": ["حرارت", "کشش ثقل", "روشنی"],
+        "options_sd": ["گرمي", "ڪشش ثقل", "روشني"],
+        "answer": 1
+    },
+    {
+        "ur": "سب سے بڑا سیارہ کون سا ہے؟",
+        "sd": "سڀ کان وڏو سيارو ڪهڙو آهي؟",
+        "options_ur": ["زمین", "مشتری", "مریخ"],
+        "options_sd": ["ڌرتي", "مشتري", "مريخ"],
+        "answer": 1
+    },
+    {
+        "ur": "پھیپھڑے کس کام میں مدد دیتے ہیں؟",
+        "sd": "ڦڦڙ ڪهڙي ڪم ۾ مدد ڪن ٿا؟",
+        "options_ur": ["سانس", "ہضم", "چلنا"],
+        "options_sd": ["ساهه کڻڻ", "هضم", "هلڻ"],
+        "answer": 0
+    },
+    {
+        "ur": "پانی گرم ہونے پر کس میں تبدیل ہوتا ہے؟",
+        "sd": "پاڻي گرم ٿيڻ تي ڪنهن ۾ تبديل ٿئي ٿو؟",
+        "options_ur": ["برف", "بھاپ", "مٹی"],
+        "options_sd": ["برف", "ٻاڦ", "مٽي"],
+        "answer": 1
+    },
+    {
+        "ur": "مقناطیس کس دھات کو کھینچتا ہے؟",
+        "sd": "مقناطيس ڪهڙي ڌاتو کي ڇڪي ٿو؟",
+        "options_ur": ["لکڑی", "لوہا", "پلاسٹک"],
+        "options_sd": ["ڪاٺ", "لوهه", "پلاسٽڪ"],
+        "answer": 1
+    },
+    {
+        "ur": "سورج کیا ہے؟",
+        "sd": "سج ڇا آهي؟",
+        "options_ur": ["سیارہ", "ستارہ", "چاند"],
+        "options_sd": ["سيارو", "تارو", "چنڊ"],
+        "answer": 1
+    },
+    {
+        "ur": "فوٹوسنتھیسز کے لیے پودوں کو کیا چاہیے؟",
+        "sd": "فوٽوسنٿيسس لاءِ ٻوٽن کي ڇا گهرجي؟",
+        "options_ur": ["روشنی", "پلاسٹک", "ریت"],
+        "options_sd": ["روشني", "پلاسٽڪ", "ريت"],
+        "answer": 0
+    },
+    {
+        "ur": "بارش کس قدرتی عمل کا حصہ ہے؟",
+        "sd": "مينهن ڪهڙي قدرتي عمل جو حصو آهي؟",
+        "options_ur": ["پانی کا چکر", "مقناطیس", "کشش ثقل"],
+        "options_sd": ["پاڻي جو چڪر", "مقناطيس", "ڪشش ثقل"],
+        "answer": 0
     }
 ]
 
-answers = []
 
-for i, q in enumerate(questions):
-    st.write(f"*Q{i+1}. {q[lang]}*")
+# QUIZ - RANDOM QUESTIONS
 
-    option = st.radio(
-        "Choose your answer:",
-        q["options"],
-        key=f"quiz_{i}"
-    )
+st.divider()
+st.header("🧠 Science Quiz")
 
-    answers.append(q["options"].index(option))
+if "quiz_round" not in st.session_state:
+    st.session_state.quiz_round = 0
 
-if st.button("Submit Quiz"):
+if "quiz_set" not in st.session_state:
+    st.session_state.quiz_set = random.sample(quiz_bank, 3)
+
+if st.button("🔄 New Quiz / نئون سوالنامو"):
+    st.session_state.quiz_round += 1
+    st.session_state.quiz_set = random.sample(quiz_bank, 3)
+    st.rerun()
+
+with st.form("science_quiz_form"):
+
+    selected_answers = []
+
+    for i, q in enumerate(st.session_state.quiz_set):
+        st.write(f"*Q{i+1}. {q[lang]}*")
+
+        options = q["options_ur"] if lang == "ur" else q["options_sd"]
+
+        selected = st.radio(
+            "Choose your answer:",
+            options,
+            key=f"quiz_{st.session_state.quiz_round}_{i}"
+        )
+
+        selected_answers.append(options.index(selected))
+
+    submitted = st.form_submit_button("Submit Quiz")
+
+if submitted:
     score = sum(
-        answers[i] == q["answer"]
-        for i, q in enumerate(questions)
+        selected_answers[i] == q["answer"]
+        for i, q in enumerate(st.session_state.quiz_set)
     )
 
-    st.success(f"Your score: {score}/3")
+    st.success(f"🎉 Your Score: {score}/3")
