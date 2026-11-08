@@ -1,7 +1,6 @@
 import streamlit as st
 import json
 import streamlit.components.v1 as components
-from streamlit_mic_recorder import speech_to_text
 
 st.set_page_config(
     page_title="Science SmartBot",
@@ -65,7 +64,7 @@ science_data = {
 st.markdown("""
 # 🔬 Science SmartBot
 ### Class 6 | Urdu & Sindhi
-*Learn Science • Ask Questions • Take Quiz*
+Learn Science • Ask Questions • Take Quiz
 """)
 
 language = st.selectbox(
@@ -80,25 +79,14 @@ st.subheader("💬 Ask Science SmartBot")
 
 question = st.text_input("Type your science question:")
 
-voice_question = speech_to_text(
-    language="en-US" ,
-    start_prompt="🎤 Start Speaking",
-    stop_prompt="⏹️ Stop Recording",
-    just_once=True,
-    key="science_voice"
-)
-
-st.write("Detected voice text:", voice_question)
-if voice_question:
-    st.success("Your spoken question: " + voice_question)
-    question = voice_question.strip()
-    
 if st.button("Ask SmartBot"):
     answer = None
 
     for topic in science_data.values():
-        if any(k.lower() in question.lower()
-               for k in topic["keywords"]):
+        if any(
+            k.lower() in question.lower()
+            for k in topic["keywords"]
+        ):
             answer = topic[lang]
             break
 
@@ -106,7 +94,6 @@ if st.button("Ask SmartBot"):
         st.success(answer)
 
         speech_language = "ur-PK" if lang == "ur" else "sd-PK"
-
         answer_json = json.dumps(answer, ensure_ascii=False)
 
         html_code = """
@@ -172,13 +159,16 @@ questions = [
 ]
 
 answers = []
+
 for i, q in enumerate(questions):
     st.write(f"*Q{i+1}. {q[lang]}*")
+
     option = st.radio(
         "Choose your answer:",
         q["options"],
         key=f"quiz_{i}"
     )
+
     answers.append(q["options"].index(option))
 
 if st.button("Submit Quiz"):
@@ -186,4 +176,5 @@ if st.button("Submit Quiz"):
         answers[i] == q["answer"]
         for i, q in enumerate(questions)
     )
+
     st.success(f"Your score: {score}/3")
