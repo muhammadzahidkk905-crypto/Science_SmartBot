@@ -1,4 +1,6 @@
 import streamlit as st
+import json
+import streamlit.components.v1 as components
 
 st.set_page_config(
     page_title="Science SmartBot",
@@ -87,6 +89,33 @@ if st.button("Ask SmartBot"):
 
     if answer:
         st.success(answer)
+
+speech_language = "ur-PK" if lang == "ur" else "sd-PK"
+
+components.html(
+    f"""
+    <button onclick='speakAnswer()'
+    style="padding:12px 22px;border-radius:12px;
+    background:#176B55;color:white;border:none;
+    font-size:17px;">
+    🔊 جواب سنیں / جواب ٻڌو
+    </button>
+
+    <script>
+    const answerText = {json.dumps(answer, ensure_ascii=False)};
+    const speechLang = "{speech_language}";
+
+    function speakAnswer() {{
+        const speech = new SpeechSynthesisUtterance(answerText);
+        speech.lang = speechLang;
+        speech.rate = 0.85;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(speech);
+    }}
+    </script>
+    """,
+    height=65
+)
     else:
         st.info(
             "معذرت! یہ سوال میری معلومات میں موجود نہیں۔"
