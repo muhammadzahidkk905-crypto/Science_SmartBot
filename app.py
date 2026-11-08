@@ -153,6 +153,12 @@ h3 {
 """, unsafe_allow_html=True)
 
 st.divider()
+
+st.header("📚 Explore Science Topics")
+
+for topic_name, topic in science_data.items():
+    st.markdown("### 🔬 " + topic_name.title())
+    st.info(topic[lang])
 st.subheader("💬 Ask Science SmartBot")
 
 question = st.text_input("Type your science question:")
