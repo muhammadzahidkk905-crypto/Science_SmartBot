@@ -8,6 +8,24 @@ st.set_page_config(
     page_icon="🔬",
     layout="centered"
 )
+st.markdown("""
+<div style="
+    background: linear-gradient(135deg, #063970, #11998e);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+">
+    <h1>🔬 SCIENCE SMARTBOT</h1>
+    <h3>Explore • Learn • Discover</h3>
+    <p>Welcome to the World of Science!</p>
+    <p>اردو اور سنڌي ۾ سائنس سکڻ جو دلچسپ طريقو</p>
+</div>
+""", unsafe_allow_html=True)
+
+st.write("")
+st.info("🌟 Welcome Young Scientists! Let's discover something amazing today.")
 
 # DESIGN
 st.markdown("""
