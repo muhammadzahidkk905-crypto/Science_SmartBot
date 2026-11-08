@@ -81,17 +81,18 @@ st.subheader("💬 Ask Science SmartBot")
 question = st.text_input("Type your science question:")
 
 voice_question = speech_to_text(
-    language="ur-PK" if lang == "ur" else "sd-PK",
+    language="en-US" ,
     start_prompt="🎤 Start Speaking",
     stop_prompt="⏹️ Stop Recording",
     just_once=True,
     key="science_voice"
 )
 
+st.write("Detected voice text:", voice_question)
 if voice_question:
+    st.success("Your spoken question: " + voice_question)
     question = voice_question.strip()
-    st.info("Your spoken question: " + question)
-
+    
 if st.button("Ask SmartBot"):
     answer = None
 
