@@ -78,6 +78,8 @@ lang = "ur" if language == "Urdu" else "sd"
 st.divider()
 st.subheader("💬 Ask Science SmartBot")
 
+question = st.text_input("Type your science question:")
+
 voice_question = speech_to_text(
     language="ur-PK" if lang == "ur" else "sd-PK",
     start_prompt="🎤 Start Speaking",
