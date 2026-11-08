@@ -152,13 +152,6 @@ h3 {
 </style>
 """, unsafe_allow_html=True)
 
-st.divider()
-
-st.header("📚 Explore Science Topics")
-
-for topic_name, topic in science_data.items():
-    st.markdown("### 🔬 " + topic_name.title())
-    st.info(topic[lang])
     st.divider()
 st.header("📚 Science Question Library")
 
