@@ -81,6 +81,7 @@ question = st.text_input("Type your science question:")
 
 if st.button("Ask SmartBot"):
     answer = None
+
     for topic in science_data.values():
         if any(k.lower() in question.lower()
                for k in topic["keywords"]):
@@ -90,32 +91,41 @@ if st.button("Ask SmartBot"):
     if answer:
         st.success(answer)
 
-speech_language = "ur-PK" if lang == "ur" else "sd-PK"
+        speech_language = "ur-PK" if lang == "ur" else "sd-PK"
 
-components.html(
-    f"""
-    <button onclick='speakAnswer()'
-    style="padding:12px 22px;border-radius:12px;
-    background:#176B55;color:white;border:none;
-    font-size:17px;">
-    🔊 جواب سنیں / جواب ٻڌو
-    </button>
+        answer_json = json.dumps(answer, ensure_ascii=False)
 
-    <script>
-    const answerText = {json.dumps(answer, ensure_ascii=False)};
-    const speechLang = "{speech_language}";
+        html_code = """
+        <button onclick="speakAnswer()"
+        style="padding:12px 22px;border-radius:12px;
+        background:#176B55;color:white;border:none;
+        font-size:17px;">
+        🔊 جواب سنیں / جواب ٻڌو
+        </button>
 
-    function speakAnswer() {{
-        const speech = new SpeechSynthesisUtterance(answerText);
-        speech.lang = speechLang;
-        speech.rate = 0.85;
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(speech);
-    }}
-    </script>
-    """,
-    height=65
-)
+        <script>
+        const answerText = ANSWER_PLACEHOLDER;
+        const speechLang = "LANG_PLACEHOLDER";
+
+        function speakAnswer() {
+            const speech = new SpeechSynthesisUtterance(answerText);
+            speech.lang = speechLang;
+            speech.rate = 0.85;
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(speech);
+        }
+        </script>
+        """
+
+        html_code = html_code.replace(
+            "ANSWER_PLACEHOLDER", answer_json
+        )
+        html_code = html_code.replace(
+            "LANG_PLACEHOLDER", speech_language
+        )
+
+        components.html(html_code, height=65)
+
     else:
         st.info(
             "معذرت! یہ سوال میری معلومات میں موجود نہیں۔"
