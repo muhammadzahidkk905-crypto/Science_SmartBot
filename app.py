@@ -249,15 +249,59 @@ language = st.selectbox(
 lang = "ur" if language == "Urdu" else "sd"
 
 
-# QUESTION LIBRARY - QUESTIONS ONLY
+# SCIENCE TOPIC CARDS
 
 st.divider()
-st.header("📚 Science Question Library")
+st.header("📚 Explore Science Topics")
+st.caption("Choose a topic and discover interesting science questions!")
 
-for topic_name, items in topics.items():
-    with st.expander("🔬 " + topic_name):
-        for i, item in enumerate(items, 1):
-            st.write(f"*Q{i}. {item[lang]}*")
+topic_design = {
+    "Plants": "🌱",
+    "Heart": "❤️",
+    "Water Cycle": "💧",
+    "Gravity": "🌍",
+    "Matter": "🧪",
+    "Solar System": "☀️",
+    "Planets": "🪐",
+    "Evaporation": "💨",
+    "Lungs": "🫁",
+    "Magnet": "🧲"
+}
+
+topic_colors = [
+    "#E8F5E9", "#FCE4EC", "#E3F2FD",
+    "#FFF3E0", "#F3E5F5"
+]
+
+topic_list = list(topics.items())
+
+for row in range(0, len(topic_list), 2):
+    cols = st.columns(2)
+
+    for col, (topic_name, items) in zip(
+        cols, topic_list[row:row+2]
+    ):
+        with col:
+            emoji = topic_design.get(topic_name, "🔬")
+
+            st.markdown(f"""
+            <div style="
+                background: linear-gradient(135deg, #E3F2FD, #E8F5E9);
+                padding: 18px;
+                border-radius: 15px;
+                text-align: center;
+                border: 2px solid #11998e;
+                margin-bottom: 10px;
+            ">
+                <h1>{emoji}</h1>
+                <h3>{topic_name}</h3>
+                <p>{len(items)} Interesting Questions</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            with st.expander("Explore Questions"):
+                for i, item in enumerate(items, 1):
+                    st.write(f"*Q{i}. {item[lang]}*")
 
 
 # ASK SMARTBOT
