@@ -7,6 +7,45 @@ st.set_page_config(
     page_icon="🔬",
     layout="centered"
 )
+st.markdown("""
+<style>
+.stApp {
+    background: linear-gradient(135deg, #e8f5f0, #eaf1ff);
+}
+
+h1 {
+    color: #12664f;
+    text-align: center;
+    font-weight: 800;
+}
+
+h3 {
+    color: #176b55;
+}
+
+.stButton > button {
+    background: #176b55;
+    color: white;
+    border-radius: 12px;
+    border: none;
+    padding: 10px 22px;
+    font-weight: bold;
+}
+
+.stButton > button:hover {
+    background: #104c3d;
+    color: white;
+}
+
+.stTextInput input {
+    border-radius: 10px;
+}
+
+.stSelectbox div[data-baseweb="select"] {
+    border-radius: 10px;
+}
+</style>
+""", unsafe_allow_html=True)
 
 science_data = {
     "plants": {
