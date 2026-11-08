@@ -260,7 +260,7 @@ elif page == "💬 Ask SmartBot":
             html_code = html_code.replace("ANSWER_PLACEHOLDER", answer_json).replace("LANG_PLACEHOLDER", speech_language)
             components.html(html_code, height=65)
         elif normalized:
-            st.warning("معذرت! یہ سوال ابھی میری معلومات میں موجود نہیں۔ Topics  دیے گئے سوالات آزمائیں۔" if lang == "ur" else "معاف ڪجو! هي سوال اڃا منهنجي ڄاڻ ۾ موجود ناهي. Topics وارا سوال آزمائي ڏسو۔")
+            st.warning("معذرت! یہ سوال ابھی میری معلومات میں موجود نہیں۔" if lang == "ur" else ".معاف ڪجو! هي سوال اڃا منهنجي ڄاڻ ۾ موجود ناهي")
         else:
             st.info("Please type a question first.")
 
